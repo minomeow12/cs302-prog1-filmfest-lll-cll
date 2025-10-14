@@ -27,9 +27,14 @@ class Event
 		Event & operator = (const Event & source);
 		
 		//Shared functions
-	        virtual	bool display() const;
+	        bool display() const;
 		int compare(const char * to_compare) const;
 		bool match(const string & keyword) const;
+
+		//3 functions
+		bool purchaseTicket(float & balance);
+		bool isAffordable(float balance) const;
+		float getDiscountedPrice(float discountRate) const;	
 
 	protected:
 		char * name;
@@ -58,7 +63,7 @@ class Screening : public Event
 		bool viewSchedule() const;
 		bool rateFilm(int rating);
 		//display
-		bool display() const override;
+		bool display() const;
 
 	private:
 		char * filmTitle;
@@ -77,8 +82,7 @@ class Workshop : public Event
 		//constructors
 		Workshop();
 		Workshop(const char * init_name, const string & init_topic, const string & init_instructor, int init_seats, float init_price);
-		Workshop(const Workshop & source);
-
+		
 		//destructor
 		~Workshop();
 
@@ -87,7 +91,7 @@ class Workshop : public Event
 		bool cancelRegistration(const string & attendee);
 		bool printCertificate() const;
 		//display
-		bool display() const override;
+		bool display() const;
 
 	private:
 		string topic;
@@ -104,7 +108,7 @@ class MerchBooth : public Event
 		//constructor
 		MerchBooth();
 		MerchBooth(const char * name, const vector<string> & init_items, const vector<float> & init_prices, float init_price);
-		MerchBooth(const MerchBooth & source);
+		
 
 		//Destructor
 		~MerchBooth();
@@ -114,7 +118,7 @@ class MerchBooth : public Event
 		bool purchaseItem(const string & itemName, float & balance);
 		bool restock(const string & itemName, float price);
 		//display
-		bool display() const override;
+		bool display() const;
 
 	private:
 		vector<string> items;
