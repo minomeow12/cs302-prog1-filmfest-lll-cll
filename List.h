@@ -3,21 +3,21 @@
 
 #include "Node.h"
 
-class List
+class WorkshopLLL 
 {
     public:
-        List();
-        List(const List & source);
-        ~List();
+        WorkshopLLL();
+        WorkshopLLL(const WorkshopLLL & source);
+        ~WorkshopLLL();
 
         bool insert(const Workshop & to_add);
         bool remove(const char * to_find);
         int remove_all();
         int display();
+	Workshop* find(const string & name) const;
 
     private:
         workshop::Node * head;
-        workshop::Node * tail;
 
         int copy(workshop::Node *& dest, workshop::Node * src);
         bool insert(workshop::Node *& head, workshop::Node & to_add);
@@ -32,25 +32,27 @@ class List
 
 class ScreeningCLL
 {
-	public:
-		ScreeningCLL();
-		ScreeningCLL(const ScreeningCLL & source);
-		~ScreeningCLL();
-
-		bool insert(const Screening & to_add);
-		bool remove(const char * to_find);
-		int remove_all();
-		int display();
-
-	private:
-		screening::Node * rear;
-
-		int copy(screening::Node *& dest, screening::Node * src);
-		bool insert(screening::Node *& rear, const Screening & to_add);
-		bool remove(screening::Node *& rear, const char * to_find);
-		int remove_all(screening::Node *& rear);
-		int display(screening:: Node * rear);
-
-		int count(screening::Node * rear) const;
-		bool find(screening::Node * rear, const string & to_find) const;
+    public:
+        ScreeningCLL();
+        ScreeningCLL(const ScreeningCLL & source);
+        ~ScreeningCLL();
+        
+        bool insert(const Screening & to_add);
+        bool remove(const char * to_find);
+        int remove_all();
+        int display();
+        Screening* find(const string & name) const;
+        
+    private:
+        screening::Node * rear;
+        
+        int copy(screening::Node *& dest, screening::Node * current, screening::Node * stop);
+        bool insert_recursive(screening::Node *& rear, screening::Node * current, const Screening & to_add);
+        int display_recursive(screening::Node * current, screening::Node * stop);
+        bool remove_recursive(screening::Node *& rear, screening::Node * current, const char * to_find);
+        int remove_all_recursive(screening::Node *& rear, screening::Node * current);
+        bool find_recursive(screening::Node * current, screening::Node * stop, const string & to_find) const;
+        Screening* find_by_name(screening::Node * current, screening::Node * stop, const string & name) const;
+        int count_recursive(screening::Node * current, screening::Node * stop, int cnt) const;
+        screening::Node * find_previous(screening::Node * rear, screening::Node * target);
 };

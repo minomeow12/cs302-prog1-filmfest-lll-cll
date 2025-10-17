@@ -119,7 +119,7 @@ class MerchBooth : public Event
 		bool restock(const string & itemName, float price);
 		//display
 		bool display() const;
-
+		bool removeItem(const string & itemName); 
 	private:
 		vector<string> items;
 		vector<float> prices;
