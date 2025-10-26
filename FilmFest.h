@@ -114,7 +114,6 @@ class MerchBooth : public Event
 		~MerchBooth();
 
 		//3 new functions
-		bool listItems() const;
 		bool purchaseItem(const string & itemName, float & balance);
 		bool restock(const string & itemName, float price);
 		//display

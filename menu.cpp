@@ -1,11 +1,13 @@
+// Evelyn Nguyen, CS302, prog1, 10/14/25
+// Menu implementation
 
-//Evelyn Nguyen, CS302, prog1, 10/14/25
-//Menu implementation
 #include "menu.h"
 #include <iostream>
 using namespace std;
 
-Menu::Menu() : merch("Official Booth", {"T-Shirt", "Mug", "Poster"}, {20.0f, 10.0f, 5.0f}, 0.0f){}
+Menu::Menu()
+    : merch("Official Booth", {"T-Shirt", "Mug", "Poster"}, {20.0f, 10.0f, 5.0f}, 0.0f) {}
+
 void Menu::run()
 {
     int choice = 0;
@@ -17,10 +19,16 @@ void Menu::run()
              << "2. Customer\n"
              << "3. Exit Program\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Please enter a number.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
-        switch (choice) 
-	{
+
+        switch (choice) {
             case 1: organizerMainMenu(); break;
             case 2: customerMainMenu(); break;
             case 3: cout << "Thank you for visiting Octoberfest!\n"; break;
@@ -29,23 +37,27 @@ void Menu::run()
     } while (choice != 3);
 }
 
-//ORGANIZER MENU FUNCTIONS
-
+// ORGANIZER MENU
 void Menu::organizerMainMenu()
 {
     int choice = 0;
     do {
         cout << "\n====== ORGANIZER MENU ======\n"
-             << "Manage your events:\n"
              << "1. Workshops\n"
              << "2. Film Screenings\n"
              << "3. Merchandise Booth\n"
              << "4. Return to Main Menu\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Try again.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
-        switch (choice)
-       	{
+
+        switch (choice) {
             case 1: organizer_workshopMenu(); break;
             case 2: organizer_screeningMenu(); break;
             case 3: organizer_merchMenu(); break;
@@ -55,11 +67,12 @@ void Menu::organizerMainMenu()
     } while (choice != 4);
 }
 
+// Workshop Management ----------
+
 void Menu::organizer_workshopMenu()
 {
     int choice = 0;
-    do
-    {
+    do {
         cout << "\n--- ORGANIZER: Workshop Management ---\n"
              << "1. Add Workshop\n"
              << "2. Display All Workshops\n"
@@ -67,7 +80,13 @@ void Menu::organizer_workshopMenu()
              << "4. Search Workshop\n"
              << "5. Return to Organizer Menu\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Enter a number.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
 
         if (choice == 1) {
@@ -82,49 +101,59 @@ void Menu::organizer_workshopMenu()
             getline(cin, topic);
             cout << "Instructor: ";
             getline(cin, instructor);
+
             cout << "Seats available: ";
-            cin >> seats;
+            while (!(cin >> seats)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid input. Enter a number: ";
+            }
+
             cout << "Price: $";
-            cin >> price;
+            while (!(cin >> price)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid price. Enter again: $";
+            }
             cin.ignore(100, '\n');
 
             Workshop w(name, topic, instructor, seats, price);
-            if (workshops.insert(w)) {
+            if (workshops.insert(w))
                 cout << "Workshop added successfully!\n";
-            } else {
+            else
                 cout << "Failed to add workshop.\n";
-            }
         }
         else if (choice == 2) {
-            cout << "\n--- All Workshops ---\n";
-            workshops.display();
+            if (workshops.display() == 0)
+                cout << "(No workshops available.)\n";
         }
         else if (choice == 3) {
             string name;
             cout << "Enter workshop name to remove: ";
             getline(cin, name);
-            if (workshops.remove(name.c_str())) {
-                cout << "Workshop removed successfully!\n";
-            } else {
+
+            if (workshops.remove(name.c_str()))
+                cout << "Workshop removed successfully.\n";
+            else
                 cout << "Workshop not found.\n";
-            }
         }
         else if (choice == 4) {
             string name;
             cout << "Enter workshop name to search: ";
             getline(cin, name);
-            Workshop* found = workshops.find(name);
-            if (found) {
-                cout << "Workshop found!\n";
-                found->display();
-            } else {
+
+            if (workshops.find(name))
+                cout << "Workshop found.\n";
+            else
                 cout << "Workshop not found.\n";
-            }
         }
+
     } while (choice != 5);
 }
 
-void Menu::organizer_screeningMenu() 
+// ---------- Screening Management ----------
+
+void Menu::organizer_screeningMenu()
 {
     int choice = 0;
     do {
@@ -135,116 +164,128 @@ void Menu::organizer_screeningMenu()
              << "4. Search Screening\n"
              << "5. Return to Organizer Menu\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Enter a number.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
 
         if (choice == 1) {
-            char filmTitle[NAME_SIZE];
+            char title[NAME_SIZE];
             string genre;
             int duration;
             float price;
 
             cout << "Enter film title: ";
-            cin.getline(filmTitle, NAME_SIZE);
+            cin.getline(title, NAME_SIZE);
             cout << "Genre: ";
             getline(cin, genre);
+
             cout << "Duration (min): ";
-            cin >> duration;
+            while (!(cin >> duration)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid input. Enter a number: ";
+            }
+
             cout << "Price: $";
-            cin >> price;
+            while (!(cin >> price)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid price. Enter again: $";
+            }
             cin.ignore(100, '\n');
 
-            Screening s(filmTitle, filmTitle, genre, duration, price);
-            if (screenings.insert(s)) {
-                cout << "Screening added successfully!\n";
-            } else {
+            Screening s(title, title, genre, duration, price);
+            if (screenings.insert(s))
+                cout << "Screening added successfully.\n";
+            else
                 cout << "Failed to add screening.\n";
-            }
         }
         else if (choice == 2) {
-            cout << "\n--- All Screenings ---\n";
-            screenings.display();
+            if (screenings.display() == 0)
+                cout << "(No screenings scheduled.)\n";
         }
         else if (choice == 3) {
             string title;
             cout << "Enter film title to remove: ";
             getline(cin, title);
-            if (screenings.remove(title.c_str())) {
-                cout << "Screening removed successfully!\n";
-            } else {
+
+            if (screenings.remove(title.c_str()))
+                cout << "Screening removed successfully.\n";
+            else
                 cout << "Screening not found.\n";
-            }
         }
         else if (choice == 4) {
             string title;
             cout << "Enter film title to search: ";
             getline(cin, title);
-            Screening* found = screenings.find(title);
-            if (found) {
-                cout << "Screening found!\n";
-                found->display();
-            } else {
+
+            if (screenings.find(title))
+                cout << "Screening found.\n";
+            else
                 cout << "Screening not found.\n";
-            }
         }
 
     } while (choice != 5);
 }
 
-void Menu::organizer_merchMenu() {
+// ---------- Merchandise Booth ----------
+
+void Menu::organizer_merchMenu()
+{
     int choice = 0;
     do {
         cout << "\n--- ORGANIZER: Merchandise Booth Management ---\n"
              << "1. Display Booth Info\n"
-             << "2. List Items\n"
-             << "3. Add/Restock Item\n"
-	     << "4. Remove Item\n" 
-             << "5. View Inventory\n"
-             << "6. Return to Organizer Menu\n"
+             << "2. Add/Restock Item\n"
+             << "3. Remove Item\n"
+             << "4. Return to Organizer Menu\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Enter a number.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
 
-        if (choice == 1) {
+        if (choice == 1)
             merch.display();
-        }
         else if (choice == 2) {
-            merch.listItems();
-        }
-        else if (choice == 3) {
             string item;
             float price;
             cout << "Enter item name: ";
             getline(cin, item);
+
             cout << "Enter item price: $";
-            cin >> price;
+            while (!(cin >> price)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid price. Enter again: $";
+            }
             cin.ignore(100, '\n');
 
-            if (merch.restock(item, price)) {
-                cout << "Item restocked successfully!\n";
-            } else {
-                cout << "Failed to restock item.\n";
-            }
+            merch.restock(item, price);
         }
-	else if (choice == 4)
-	{
-		string item;
-		cout << "Enter item name to remove: ";
-	        getline(cin, item);	
-		if (merch.removeItem(item))
-			cout << "Removed successfully\n";
-		else
-			cout << "No item found\n";
-	}
-        else if (choice == 5) {
-            cout << "\n--- Inventory ---\n";
-            merch.display();
+        else if (choice == 3) {
+            string item;
+            cout << "Enter item name to remove: ";
+            getline(cin, item);
+
+            if (merch.removeItem(item))
+                cout << "Item removed successfully.\n";
+            else
+                cout << "Item not found.\n";
         }
 
-    } while (choice != 6);
+    } while (choice != 4);
 }
-
-// CUSTOMER MENU FUNCTIONS
+// CUSTOMER MENU
 
 void Menu::customerMainMenu() {
     int choice = 0;
@@ -256,7 +297,13 @@ void Menu::customerMainMenu() {
              << "3. Visit Merchandise Booth\n"
              << "4. Return to Main Menu\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Enter a number.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
 
         switch (choice) {
@@ -264,10 +311,12 @@ void Menu::customerMainMenu() {
             case 2: customer_screeningMenu(); break;
             case 3: customer_merchMenu(); break;
             case 4: return;
-            default: cout << "Invalid choice.\n"; break;
+            default: cout << "Invalid choice. Try again.\n"; break;
         }
     } while (choice != 4);
 }
+
+// ---------- Customer: Workshop Menu ----------
 
 void Menu::customer_workshopMenu() {
     int choice = 0;
@@ -276,17 +325,22 @@ void Menu::customer_workshopMenu() {
              << "1. View All Workshops\n"
              << "2. Register for a Workshop\n"
              << "3. Cancel Registration\n"
-             << "4. Get Certificate\n"
-             << "5. Test isAffordable()\n"
-             << "6. Test getDiscountedPrice()\n"
-             << "7. Return to Customer Menu\n"
+             << "4. Print Certificate\n"
+             << "5. Check if Affordable\n"
+             << "6. Return to Customer Menu\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Enter a number.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
 
         if (choice == 1) {
-            cout << "\n--- Available Workshops ---\n";
-            workshops.display();
+            if (workshops.display() == 0)
+                cout << "(No workshops currently available.)\n";
         }
         else if (choice == 2) {
             string name, attendee;
@@ -295,16 +349,10 @@ void Menu::customer_workshopMenu() {
             cout << "Enter your name: ";
             getline(cin, attendee);
 
-            Workshop* found = workshops.find(name);
-            if (found) {
-                if (found->registerAttendee(attendee)) {
-                    cout << "Successfully registered!\n";
-                } else {
-                    cout << "Registration failed.\n";
-                }
-            } else {
-                cout << "Workshop not found.\n";
-            }
+            if (workshops.registerAttendee(name, attendee))
+                cout << "You are registered for '" << name << "'!\n";
+            else
+                cout << "Workshop not found or full.\n";
         }
         else if (choice == 3) {
             string name, attendee;
@@ -313,28 +361,20 @@ void Menu::customer_workshopMenu() {
             cout << "Enter your name: ";
             getline(cin, attendee);
 
-            Workshop* found = workshops.find(name);
-            if (found) {
-                if (found->cancelRegistration(attendee)) {
-                    cout << "Registration cancelled!\n";
-                } else {
-                    cout << "Cancellation failed.\n";
-                }
-            } else {
-                cout << "Workshop not found.\n";
-            }
+            if (workshops.cancelRegistration(name, attendee))
+                cout << "Registration cancelled successfully.\n";
+            else
+                cout << "Could not cancel -workshop not found or no registration.\n";
         }
         else if (choice == 4) {
             string name;
             cout << "Enter workshop name: ";
             getline(cin, name);
 
-            Workshop* found = workshops.find(name);
-            if (found) {
-                found->printCertificate();
-            } else {
-                cout << "Workshop not found.\n";
-            }
+            if (workshops.printCertificate(name))
+                cout << "Certificate printed for '" << name << "'.\n";
+            else
+                cout << "Workshop not found or no registration found.\n";
         }
         else if (choice == 5) {
             string name;
@@ -342,59 +382,48 @@ void Menu::customer_workshopMenu() {
             cout << "Enter workshop name: ";
             getline(cin, name);
             cout << "Enter your balance: $";
-            cin >> balance;
+            while (!(cin >> balance)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid number. Enter balance again: $";
+            }
             cin.ignore(100, '\n');
 
-            Workshop* found = workshops.find(name);
-            if (found) {
-                if (found->isAffordable(balance)) {
-                    cout << "You can afford this workshop!\n";
-                } else {
-                    cout << "You cannot afford this workshop.\n";
-                }
-            } else {
-                cout << "Workshop not found.\n";
-            }
-        }
-        else if (choice == 6) {
-            string name;
-            float discount;
-            cout << "Enter workshop name: ";
-            getline(cin, name);
-            cout << "Enter discount rate (e.g., 0.1 for 10%): ";
-            cin >> discount;
-            cin.ignore(100, '\n');
-
-            Workshop* found = workshops.find(name);
-            if (found) {
-                float discountedPrice = found->getDiscountedPrice(discount);
-                cout << "Discounted price: $" << discountedPrice << "\n";
-            } else {
-                cout << "Workshop not found.\n";
-            }
+            if (workshops.isAffordable(name, balance))
+                cout << "You can afford this workshop!\n";
+            else
+                cout << "Either not found or insufficient funds.\n";
         }
 
-    } while (choice != 7);
+    } while (choice != 6);
 }
+
+// ---------- Customer: Screening Menu ----------
 
 void Menu::customer_screeningMenu() {
     int choice = 0;
     do {
         cout << "\n--- CUSTOMER: Film Screenings ---\n"
              << "1. View All Screenings\n"
-             << "2. Buy a Ticket\n"
-             << "3. Rate a Film\n"
+             << "2. Purchase Ticket\n"
+             << "3. Rate Film\n"
              << "4. View Schedule\n"
-             << "5. Test isAffordable()\n"
-             << "6. Test getDiscountedPrice()\n"
+             << "5. Check if Affordable\n"
+             << "6. Get Discounted Price\n"
              << "7. Return to Customer Menu\n"
              << "Choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(100, '\n');
+            cout << "Invalid input. Enter a number.\n";
+            continue;
+        }
         cin.ignore(100, '\n');
 
         if (choice == 1) {
-            cout << "\n--- Available Screenings ---\n";
-            screenings.display();
+            if (screenings.display() == 0)
+                cout << "(No screenings currently scheduled.)\n";
         }
         else if (choice == 2) {
             string title;
@@ -402,42 +431,39 @@ void Menu::customer_screeningMenu() {
             cout << "Enter film title: ";
             getline(cin, title);
             cout << "Enter your balance: $";
-            cin >> balance;
+            while (!(cin >> balance)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid amount. Try again: $";
+            }
             cin.ignore(100, '\n');
 
-            Screening* found = screenings.find(title);
-            if (found) {
-                if (found->purchaseTicket(balance)) {
-                    cout << "Ticket purchased successfully!\n";
-                } else {
-                    cout << "Purchase failed. Insufficient funds?\n";
-                }
-            } else {
-                cout << "Film not found.\n";
-            }
+            if (screenings.purchaseTicket(title, balance))
+                cout << "Ticket purchased for '" << title << "'!\n";
+            else
+                cout << "Screening not found or insufficient funds.\n";
         }
         else if (choice == 3) {
             string title;
             int rating;
             cout << "Enter film title: ";
             getline(cin, title);
-            cout << "Enter your rating (1-5): ";
-            cin >> rating;
+            cout << "Enter rating (1–5): ";
+            while (!(cin >> rating) || rating < 1 || rating > 5) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid rating. Enter 1–5: ";
+            }
             cin.ignore(100, '\n');
 
-            Screening* found = screenings.find(title);
-            if (found) {
-                if (found->rateFilm(rating)) {
-                    cout << "Thank you for rating!\n";
-                } else {
-                    cout << "Rating failed.\n";
-                }
-            } else {
+            if (screenings.rateFilm(title, rating))
+                cout << "Thank you for rating!\n";
+            else
                 cout << "Film not found.\n";
-            }
         }
         else if (choice == 4) {
-            screenings.display();
+            if (screenings.display() == 0)
+                cout << "(No schedule available.)\n";
         }
         else if (choice == 5) {
             string title;
@@ -445,36 +471,35 @@ void Menu::customer_screeningMenu() {
             cout << "Enter film title: ";
             getline(cin, title);
             cout << "Enter your balance: $";
-            cin >> balance;
+            while (!(cin >> balance)) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid amount. Try again: $";
+            }
             cin.ignore(100, '\n');
 
-            Screening* found = screenings.find(title);
-            if (found) {
-                if (found->isAffordable(balance)) {
-                    cout << "You can afford this screening!\n";
-                } else {
-                    cout << "You cannot afford this screening.\n";
-                }
-            } else {
-                cout << "Film not found.\n";
-            }
+            if (screenings.isAffordable(title, balance))
+                cout << "You can afford this screening!\n";
+            else
+                cout << "Screening not found or too expensive.\n";
         }
         else if (choice == 6) {
             string title;
             float discount;
             cout << "Enter film title: ";
             getline(cin, title);
-            cout << "Enter discount rate (e.g., 0.1 for 10%): ";
-            cin >> discount;
+            cout << "Enter discount rate (0.1 = 10%): ";
+            while (!(cin >> discount) || discount < 0.0f) {
+                cin.clear();
+                cin.ignore(100, '\n');
+                cout << "Invalid rate. Enter again (e.g., 0.2): ";
+            }
             cin.ignore(100, '\n');
 
-            Screening* found = screenings.find(title);
-            if (found) {
-                float discountedPrice = found->getDiscountedPrice(discount);
-                cout << "Discounted price: $" << discountedPrice << "\n";
-            } else {
-                cout << "Film not found.\n";
-            }
+            if (screenings.getDiscountedPrice(title, discount))
+                cout << "Discount applied successfully.\n";
+            else
+                cout << "Screening not found.\n";
         }
 
     } while (choice != 7);
@@ -493,7 +518,7 @@ void Menu::customer_merchMenu()
         cin.ignore(100, '\n');
 
         if (choice == 1) {
-            merch.listItems();
+            merch.display();
         }
         else if (choice == 2) {
             string item;
@@ -513,3 +538,5 @@ void Menu::customer_merchMenu()
 
     } while (choice != 3);
 }
+
+

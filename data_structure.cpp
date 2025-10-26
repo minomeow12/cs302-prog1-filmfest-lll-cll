@@ -5,8 +5,7 @@
 #include <iostream>
 using namespace std;
 
-//--- WorkshopLLL ---
-
+//WorkshopLLL  
 WorkshopLLL::WorkshopLLL() : head(nullptr) {}
 
 WorkshopLLL::WorkshopLLL(const WorkshopLLL & source) : head(nullptr)
@@ -19,10 +18,10 @@ WorkshopLLL::~WorkshopLLL()
     remove_all();
 }
 
-// --- Wrappers ---
+//Wrappers  
 bool WorkshopLLL::insert(const Workshop & to_add)
 {
-    return insert(head, *(new workshop::Node(to_add)));
+    return insert(head, to_add) ;
 }
 
 bool WorkshopLLL::remove(const char * to_find)
@@ -37,11 +36,23 @@ int WorkshopLLL::remove_all()
 
 int WorkshopLLL::display()
 {
+    if (!head)
+    {
+        cout << "No workshops to display.\n";
+        return 0;
+    }
     cout << "Displaying all Workshops:\n";
     return display(head);
 }
 
-// --- Helpers ---
+bool WorkshopLLL::find(const string & name) const
+{
+    return find(head, name);
+}
+
+//Recursive Helpers  
+
+// base case: src == nullptr | RECURSIVE: copy current node, recurse on next| STOP: end of source list
 int WorkshopLLL::copy(workshop::Node *& dest, workshop::Node * src)
 {
     if (!src) return 0;
@@ -49,16 +60,18 @@ int WorkshopLLL::copy(workshop::Node *& dest, workshop::Node * src)
     return 1 + copy(dest->get_next(), src->get_next());
 }
 
-bool WorkshopLLL::insert(workshop::Node *& head, workshop::Node & to_add)
+//base case: head == nullptr | RECURSIVE: recurse on next | STOP: end of list
+bool WorkshopLLL::insert(workshop::Node *& head, const Workshop & to_add)
 {
     if (!head)
     {
-        head = &to_add;
+        head = new workshop::Node(to_add);
         return true;
     }
     return insert(head->get_next(), to_add);
 }
 
+//base case: head == nullptr| RECURSIVE: display current, recurse on next | STOP: end of list
 int WorkshopLLL::display(workshop::Node * head)
 {
     if (!head) return 0;
@@ -67,6 +80,7 @@ int WorkshopLLL::display(workshop::Node * head)
     return 1 + display(head->get_next());
 }
 
+//base: head == nullptr| RECURSIVE: if match delete, else recurse on next | STOP: match found or end of list
 bool WorkshopLLL::remove(workshop::Node *& head, const char * to_find)
 {
     if (!head) return false;
@@ -80,6 +94,7 @@ bool WorkshopLLL::remove(workshop::Node *& head, const char * to_find)
     return remove(head->get_next(), to_find);
 }
 
+//base: head == nullptr → return 0 | RECURSIVE: delete current, recurse on next | STOP: all nodes deleted
 int WorkshopLLL::remove_all(workshop::Node *& head)
 {
     if (!head) return 0;
@@ -89,32 +104,112 @@ int WorkshopLLL::remove_all(workshop::Node *& head)
     return 1 + remove_all(head);
 }
 
-int WorkshopLLL::count(workshop::Node * head) const
-{
-    if (!head) return 0;
-    return 1 + count(head->get_next());
-}
-
+//base: head == nullptr → return false | RECURSIVE: if match display and return true, else recurse on next | STOP: match found or end of list
 bool WorkshopLLL::find(workshop::Node * head, const string & to_find) const
 {
     if (!head) return false;
-    if (head->match(to_find))
+    if (head->compare(to_find.c_str()) == 0)
+    {
+        head->display();
         return true;
+    }
     return find(head->get_next(), to_find);
 }
 
-Workshop* WorkshopLLL::find(const string & name) const
+//Function for customers-------------------
+
+// Register attendee by workshop name
+bool WorkshopLLL::registerAttendee(const string & name, const string & attendee)
 {
-    workshop::Node * current = head;
-    while (current) {
-        if (current->compare(name.c_str()) == 0)
-            return current; 
-        current = current->get_next();
-    }
-    return nullptr; //if not found, return null
+    return register_recursive(head, name, attendee);
 }
 
-//--- ScreeningCLL ---
+//base: current == nullptr | RECURSIVE: if match call node's register, else recurse on next | STOP: match found or end of list
+bool WorkshopLLL::register_recursive(workshop::Node * current, const string & name, const string & attendee)
+{
+    if (!current) return false;
+    if (current->compare(name.c_str()) == 0)
+        return current->registerAttendee(attendee);
+    return register_recursive(current->get_next(), name, attendee);
+}
+
+// Cancel registration
+bool WorkshopLLL::cancelRegistration(const string & name, const string & attendee)
+{
+    return cancel_recursive(head, name, attendee);
+}
+
+//base: current == nullptr| RECURSIVE: if match call node's cancel, else recurse on next | STOP: match found or end of list
+bool WorkshopLLL::cancel_recursive(workshop::Node * current, const string & name, const string & attendee)
+{
+    if (!current) return false;
+    if (current->compare(name.c_str()) == 0)
+        return current->cancelRegistration(attendee);
+    return cancel_recursive(current->get_next(), name, attendee);
+}
+
+// Print certificate
+bool WorkshopLLL::printCertificate(const string & name) const
+{
+    return certificate_recursive(head, name);
+}
+
+//base: current == nullptr | RECURSIVE: if match call node's printCertificate, else recurse on next | STOP: match found or end of list
+bool WorkshopLLL::certificate_recursive(workshop::Node * current, const string & name) const
+{
+    if (!current) return false;
+    if (current->compare(name.c_str()) == 0)
+        return current->printCertificate();
+    return certificate_recursive(current->get_next(), name);
+}
+
+// Check affordability
+bool WorkshopLLL::isAffordable(const string & name, float balance) const
+{
+    return isAffordable_recursive(head, name, balance);
+}
+
+//base: current == nullptr | RECURSIVE: if match call node's isAffordable, else recurse on next | STOP: match found or end of list
+bool WorkshopLLL::isAffordable_recursive(workshop::Node * current, const string & name, float balance) const
+{
+    if (!current) return false;
+    if (current->compare(name.c_str()) == 0)
+        return current->isAffordable(balance);
+    return isAffordable_recursive(current->get_next(), name, balance);
+}
+
+// Get discounted price
+float WorkshopLLL::getDiscountedPrice(const string & name, float discountRate) const
+{
+    return getDiscountedPrice_recursive(head, name, discountRate);
+}
+
+//base: current == nullptr | RECURSIVE: if match return node's discounted price, else recurse on next | STOP: match found or end of list
+float WorkshopLLL::getDiscountedPrice_recursive(workshop::Node * current, const string & name, float discountRate) const
+{
+    if (!current) return 0.0f;
+    if (current->compare(name.c_str()) == 0)
+        return current->getDiscountedPrice(discountRate);
+    return getDiscountedPrice_recursive(current->get_next(), name, discountRate);
+}
+
+// Purchase ticket
+bool WorkshopLLL::purchaseTicket(const string & name, float & balance)
+{
+    return purchase_recursive(head, name, balance);
+}
+
+//base: current == nullptr  | RECURSIVE: if match call node's purchaseTicket, else recurse on next | STOP: match found or end of list
+bool WorkshopLLL::purchase_recursive(workshop::Node * current, const string & name, float & balance)
+{
+    if (!current) return false;
+    if (current->compare(name.c_str()) == 0)
+        return current->purchaseTicket(balance);
+    return purchase_recursive(current->get_next(), name, balance);
+}
+
+//ScreeningCLL Implementation 
+
 ScreeningCLL::ScreeningCLL() : rear(nullptr) {}
 
 ScreeningCLL::ScreeningCLL(const ScreeningCLL & source) : rear(nullptr)
@@ -128,7 +223,8 @@ ScreeningCLL::~ScreeningCLL()
     remove_all();
 }
 
-//--- Wrappers ---
+// Wrappers 
+
 bool ScreeningCLL::insert(const Screening & to_add)
 {
     if (!rear)
@@ -143,7 +239,7 @@ bool ScreeningCLL::insert(const Screening & to_add)
 bool ScreeningCLL::remove(const char * to_find)
 {
     if (!rear) return false;
-    return remove_recursive(rear, rear->get_next(), to_find);
+    return remove_recursive(rear, rear, rear->get_next(), to_find);
 }
 
 int ScreeningCLL::remove_all()
@@ -163,15 +259,22 @@ int ScreeningCLL::display()
     return display_recursive(rear->get_next(), rear->get_next());
 }
 
-//Helpers ---
+bool ScreeningCLL::find(const string & name) const
+{
+    if (!rear) return false;
+    return find_recursive(rear->get_next(), rear, name);
+}
+
+//  Recursive Helpers --------------------
+
+//base: current == stop | RECURSIVE: copy current node, recurse on next | STOP: circled back to stop node
 int ScreeningCLL::copy(screening::Node *& dest, screening::Node * current, screening::Node * stop)
 {
     screening::Node * new_node = new screening::Node(*current);
     dest = new_node;
-
     if (current->get_next() == stop)
     {
-        dest->set_next(dest);  
+        dest->set_next(dest);
         return 1;
     }
     screening::Node * next_dest = new_node;
@@ -180,6 +283,7 @@ int ScreeningCLL::copy(screening::Node *& dest, screening::Node * current, scree
     return count;
 }
 
+// BASE: current == rear → insert at end, update rear | RECURSIVE: recurse on next | STOP: reached rear (insert position)
 bool ScreeningCLL::insert_recursive(screening::Node *& rear, screening::Node * current, const Screening & to_add)
 {
     if (current == rear)
@@ -193,6 +297,7 @@ bool ScreeningCLL::insert_recursive(screening::Node *& rear, screening::Node * c
     return insert_recursive(rear, current->get_next(), to_add);
 }
 
+// BASE: current->next == stop → return 1 | RECURSIVE: display current, recurse on next | STOP: circled back to stop node
 int ScreeningCLL::display_recursive(screening::Node * current, screening::Node * stop)
 {
     current->display();
@@ -202,33 +307,30 @@ int ScreeningCLL::display_recursive(screening::Node * current, screening::Node *
     return 1 + display_recursive(current->get_next(), stop);
 }
 
-bool ScreeningCLL::remove_recursive(screening::Node *& rear, screening::Node * current, const char * to_find)
+// BASE: current == nullptr or match found → delete node | RECURSIVE: check match, recurse on next | STOP: match found or circled back to start
+bool ScreeningCLL::remove_recursive(screening::Node *& rear, screening::Node * prev, screening::Node * current, const char * to_find)
 {
+    if (!current || !rear) return false;
     if (current->compare(to_find) == 0)
     {
-        //only one node in list
         if (current == rear && current->get_next() == rear)
         {
             delete rear;
             rear = nullptr;
             return true;
         }
-
-        //link previous to next if multiple nodes
         if (current == rear)
-            rear = find_previous(rear, current);
-        screening::Node * prev = find_previous(rear, current);
+            rear = prev;
         prev->set_next(current->get_next());
         delete current;
         return true;
     }
-
-    // Check if the circlle is completed
     if (current->get_next() == rear->get_next())
         return false;
-    return remove_recursive(rear, current->get_next(), to_find);
+    return remove_recursive(rear, current, current->get_next(), to_find);
 }
 
+// BASE: current == rear → delete last node, set rear to nullptr | RECURSIVE: delete current, recurse on next | STOP: all nodes deleted
 int ScreeningCLL::remove_all_recursive(screening::Node *& rear, screening::Node * current)
 {
     if (current == rear)
@@ -237,46 +339,93 @@ int ScreeningCLL::remove_all_recursive(screening::Node *& rear, screening::Node 
         rear = nullptr;
         return 1;
     }
-
     screening::Node * next = current->get_next();
     delete current;
     return 1 + remove_all_recursive(rear, next);
 }
 
+// BASE: current == nullptr or current->next == stop → return false | RECURSIVE: if match display, else recurse on next | STOP: match found or circled back to stop
 bool ScreeningCLL::find_recursive(screening::Node * current, screening::Node * stop, const string & to_find) const
 {
-    if (current->match(to_find))
+    if (!current) return false;
+    if (current->compare(to_find.c_str()) == 0)
+    {
+        current->display();
         return true;
+    }
     if (current->get_next() == stop)
         return false;
     return find_recursive(current->get_next(), stop, to_find);
 }
 
-screening::Node * ScreeningCLL::find_previous(screening::Node * rear, screening::Node * target)
+// Customer-Specific ---------------------
+
+bool ScreeningCLL::rateFilm(const string & title, int rating)
 {
-    screening::Node * current = rear;
-    while (current->get_next() != target)
-        current = current->get_next();
-    return current;
-}
-int ScreeningCLL::count_recursive(screening::Node * current, screening::Node * stop, int cnt) const
-{
-    if (current == stop && cnt > 0)
-        return cnt;
-    return count_recursive(current->get_next(), stop, cnt + 1);
+    if (!rear) return false;
+    return rate_recursive(rear->get_next(), rear->get_next(), title, rating);
 }
 
-Screening* ScreeningCLL::find(const string & name) const
+// BASE: current == nullptr or current->next == stop → return false | RECURSIVE: if match call node's rateFilm, else recurse on next | STOP: match found or circled back to stop
+bool ScreeningCLL::rate_recursive(screening::Node * current, screening::Node * stop, const string & title, int rating)
 {
-    if (!rear) return nullptr;
-    return find_by_name(rear->get_next(), rear->get_next(), name);
-}
-
-Screening* ScreeningCLL::find_by_name(screening::Node * current, screening::Node * stop, const string & name) const
-{
-    if (current->compare(name.c_str()) == 0)
-        return current;
+    if (!current) return false;
+    if (current->compare(title.c_str()) == 0)
+        return current->rateFilm(rating);
     if (current->get_next() == stop)
-        return nullptr;
-    return find_by_name(current->get_next(), stop, name);
+        return false;
+    return rate_recursive(current->get_next(), stop, title, rating);
+}
+
+bool ScreeningCLL::purchaseTicket(const string & title, float & balance)
+{
+    if (!rear) return false;
+    return purchase_recursive(rear->get_next(), rear->get_next(), title, balance);
+}
+
+// BASE: current == nullptr or current->next == stop → return false | RECURSIVE: if match call node's purchaseTicket, else recurse on next | STOP: match found or circled back to stop
+bool ScreeningCLL::purchase_recursive(screening::Node * current, screening::Node * stop, const string & title, float & balance)
+{
+    if (!current) return false;
+    if (current->compare(title.c_str()) == 0)
+        return current->purchaseTicket(balance);
+    if (current->get_next() == stop)
+        return false;
+    return purchase_recursive(current->get_next(), stop, title, balance);
+}
+
+// Check affordability
+bool ScreeningCLL::isAffordable(const string & title, float balance) const
+{
+    if (!rear) return false;
+    return isAffordable_recursive(rear->get_next(), rear->get_next(), title, balance);
+}
+
+// BASE: current == nullptr or current->next == stop → return false | RECURSIVE: if match call node's isAffordable, else recurse on next | STOP: match found or circled back to stop
+bool ScreeningCLL::isAffordable_recursive(screening::Node * current, screening::Node * stop, const string & title, float balance) const
+{
+    if (!current) return false;
+    if (current->compare(title.c_str()) == 0)
+        return current->isAffordable(balance);
+    if (current->get_next() == stop)
+        return false;
+    return isAffordable_recursive(current->get_next(), stop, title, balance);
+}
+
+// Get discounted price
+float ScreeningCLL::getDiscountedPrice(const string & title, float discountRate) const
+{
+    if (!rear) return 0.0f;
+    return getDiscountedPrice_recursive(rear->get_next(), rear->get_next(), title, discountRate);
+}
+
+// BASE: current == nullptr or current->next == stop → return 0.0f | RECURSIVE: if match return node's discounted price, else recurse on next | STOP: match found or circled back to stop
+float ScreeningCLL::getDiscountedPrice_recursive(screening::Node * current, screening::Node * stop, const string & title, float discountRate) const
+{
+    if (!current) return 0.0f;
+    if (current->compare(title.c_str()) == 0)
+        return current->getDiscountedPrice(discountRate);
+    if (current->get_next() == stop)
+        return 0.0f;
+    return getDiscountedPrice_recursive(current->get_next(), stop, title, discountRate);
 }

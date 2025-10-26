@@ -24,17 +24,19 @@ bool Workshop::registerAttendee(const string & attendee)
 
 bool Workshop::cancelRegistration(const string & attendee) 
 {
-	for (auto it = attendees.begin(); it != attendees.end(); ++it)
+        bool found = false;	
+	for (auto it = attendees.begin(); it != attendees.end() && !found; ++it)
 	{
 		if (*it == attendee) {
 			attendees.erase(it);
 			++seatsAvailable;
 			cout << attendee << " canceled their registration.\n";
-			return true;
+			found =  true;
 		}
 	}
-	cout << attendee << " is not in the regiter list.\n";
-	return false;
+	if (!found)
+		cout << attendee << " is not in the regiter list.\n";
+	return found;
 }
 
 bool Workshop::printCertificate() const 
