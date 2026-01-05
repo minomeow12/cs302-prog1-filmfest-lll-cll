@@ -25,6 +25,7 @@ circular linked lists.
 ---
 
 ## Project Structure
+.
 ├── src/
 │ ├── main.cpp
 │ ├── menu.cpp
@@ -44,13 +45,39 @@ circular linked lists.
 ├── README.md
 └── .gitignore
 
+yaml
+Copy code
 
+---
 
 ## How to Compile
 Make sure you are in the project root directory.
-
-```bash
 g++ -Wall -std=c++17 src/*.cpp -I include -o prog1
 
-## How to run
+## How to Run
+After compiling:
 ./prog1
+
+Program Features
+Add, display, and manage film festival events
+
+Uses inheritance to represent different event types
+
+Implements linked lists to store and manage data
+
+Recursive functions for traversal and cleanup
+
+Clean separation of interface (.h) and implementation (.cpp)
+
+Learning Outcomes
+Through this project, I strengthened my understanding of:
+
+Implementing linked lists from scratch
+
+Designing class hierarchies in C++
+
+Managing memory safely using constructors and destructors
+
+Structuring medium-sized C++ programs
+
+Using Git and GitHub for version control
