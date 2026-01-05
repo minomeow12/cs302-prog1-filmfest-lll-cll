@@ -33,15 +33,15 @@ After compiling:
 ./prog1
 
 ## Program Features
-Add, display, and manage film festival events
-Uses inheritance to represent different event types
-Implements linked lists to store and manage data
-Recursive functions for traversal and cleanup
-Clean separation of interface (.h) and implementation (.cpp)
+- Add, display, and manage film festival events
+- Uses inheritance to represent different event types
+- Implements linked lists to store and manage data
+- Recursive functions for traversal and cleanup
+- Clean separation of interface (.h) and implementation (.cpp)
 
-Learning Outcomes
+## Learning Outcomes
 Through this project, I strengthened my understanding of:
-Implementing linked lists 
-Designing class hierarchies in C++
-Managing memory safely using constructors and destructors
-Using Git and GitHub for version control
+- Implementing linked lists 
+- Designing class hierarchies in C++
+- Managing memory safely using constructors and destructors
+- Using Git and GitHub for version control
